@@ -141,9 +141,9 @@ export default class ModalSettings extends React.Component<ModalSettingsProps> {
         <FieldString
           label={fieldSpecAdditional.maputnik.auth_access_token.label}
           fieldSpec={fieldSpecAdditional.maputnik.auth_access_token}
-          data-wd-key="modal:settings.maputnik:auth_access_token"
-          value={metadata['maputnik:auth_access_token']}
-          onChange={onChangeMetadataProperty.bind(this, "maputnik:auth_access_token")}
+          data-wd-key="modal:settings.maputnik:auth_access_token:token"
+          value={metadata['maputnik:auth_access_token:token']}
+          onChange={onChangeMetadataProperty.bind(this, "maputnik:auth_access_token:token")}
         />
 
         <FieldString

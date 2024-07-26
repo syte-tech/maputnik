@@ -136,7 +136,23 @@ export default class MapMaplibreGl extends React.Component<MapMaplibreGlProps, M
       maxZoom: 24,
       // setting to always load glyphs of CJK fonts from server
       // https://maplibre.org/maplibre-gl-js/docs/examples/local-ideographs/
-      localIdeographFontFamily: false
+      localIdeographFontFamily: false,
+      transformRequest: (url: string) => {
+        if (this.shouldUseAuthAccessTokenForUrl(url)) {
+          const accessToken = this.getAuthAccessToken(this.props.mapStyle);
+          if (!accessToken) {
+            console.error(`No access token found for URL ${url}. This URL was configured to load with an auth_access_token.`);
+            return;
+          } 
+
+          return {
+            url,
+            headers: {
+              Authorization: `Bearer ${accessToken}`
+            }
+          }
+        }
+      }
     } satisfies MapOptions;
 
     const map = new MapLibreGl.Map(mapOpts);
@@ -258,6 +274,26 @@ export default class MapMaplibreGl extends React.Component<MapMaplibreGlProps, M
     };
     const geocoder = new MaplibreGeocoder(geocoderConfig, {maplibregl: MapLibreGl});
     map.addControl(geocoder, 'top-left');
+  }
+
+  shouldUseAuthAccessTokenForUrl(url: string) {
+    const metadata = this.props.mapStyle.metadata;
+
+    if (typeof metadata === "object" && "maputnik:auth_access_token:url_schema" in metadata!) {
+      const urlSchema = metadata!["maputnik:auth_access_token:url_schema"] as string;
+
+      if (!urlSchema) return false;
+
+      return urlSchema.split(",").some(part => url.includes(part));
+    }
+    return false;
+  }
+
+  getAuthAccessToken(mapStyle: StyleSpecification): string | null {
+    if (typeof mapStyle.metadata === "object" && "maputnik:auth_access_token:token" in mapStyle.metadata!) {
+      return mapStyle.metadata!["maputnik:auth_access_token:token"] as string;
+    }
+    return null;
   }
 
   render() {

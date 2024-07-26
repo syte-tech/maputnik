@@ -120,7 +120,7 @@ function stripAccessTokens(mapStyle: StyleSpecification) {
     ...mapStyle.metadata as any
   };
   delete changedMetadata['maputnik:openmaptiles_access_token'];
-  delete changedMetadata['maputnik:auth_access_token'];
+  delete changedMetadata['maputnik:auth_access_token:token'];
   return {
     ...mapStyle,
     metadata: changedMetadata
